@@ -61,6 +61,8 @@ class BZK(UploadScript):
                 if section:
                     article.props.section = section
             article.props.medium = get_or_create_medium(div.cssselect("#sourceTitle")[0].text)
+            if article.props.medium == None:
+                article.props.medium = "unknown"
             article.props.date = readDate(div.cssselect("#articleDate")[0].text)
 
             yield article
