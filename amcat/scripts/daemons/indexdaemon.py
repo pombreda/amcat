@@ -23,6 +23,7 @@ Daemon that checks if there are any dirty article sets that need to be
 queried and adds them to Solr
 """
 
+from django import db
 from django.db import transaction
 
 from amcat.scripts.daemons.daemonscript import DaemonScript
@@ -35,6 +36,9 @@ log = logging.getLogger(__name__)
 
 class IndexDaemon(DaemonScript):
     def run_action(self):
+        # Reset DB connection to make sure we don't run into 
+        # state problems (connection already closed etc)
+        db.close_connection()  
         try:
             with transaction.commit_on_success():
                 aset = ArticleSet.objects.filter(indexed=True, index_dirty=True)[0]
