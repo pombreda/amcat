@@ -381,3 +381,13 @@ table.key_value tr :first-child{
 .dragging{
     font-weight:bold;
 }
+
+#logo-announce {
+   position: absolute; 
+   height: 30px;
+   left: 200px;
+}
+#logo-announce div {padding-top: 4px; padding-bottom: 4px; margin-top: 2px;
+    margin-left: 2px}
+
+
