@@ -58,7 +58,7 @@ DATABASE_OPTIONS = {
    "init_command" : "set transaction isolation level read uncommitted"
 }
 
-ALLOWED_HOSTS = ['.vu.nl'] 
+ALLOWED_HOSTS = ['.vu.nl', 'localhost:8000'] 
 
 
 DATABASES = dict(default=dict(

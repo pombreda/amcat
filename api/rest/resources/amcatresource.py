@@ -30,6 +30,7 @@ from django.db.models.fields.related import RelatedObject, RelatedField
 from rest_framework import generics, serializers, fields, relations
 
 import api.rest.resources
+from api.rest.serializer import skip_field
 
 def get_related_fieldname(model, fieldname):
     field = model._meta.get_field_by_name(fieldname)[0]
@@ -117,7 +118,7 @@ class AmCATResource(generics.ListAPIView):
         """Get a list of field names from the serializer"""
         # We are a class method and rest_framework likes instance methods, so lots of ()'s
         return [name for (name, field) in cls().get_serializer_class()().get_fields().iteritems()
-                if not isinstance(field, relations.ManyPrimaryKeyRelatedField)]
+                if not skip_field(field)]
     
     def metadata(self, request):
         """This is used by the OPTIONS request; add models, fields, and label for datatables"""
@@ -147,7 +148,7 @@ class AmCATResource(generics.ListAPIView):
         subclass.__name__ = '{use_model.__name__}Resource'.format(**locals())
         return subclass
 
-    def get_paginate_by(self, queryset):
+    def get_paginate_by(self, *args, **kwargs):
         """
         Make pagination configurable by request parameteres
         """
@@ -156,7 +157,7 @@ class AmCATResource(generics.ListAPIView):
         try:
             return int(page_size)
         except ValueError:
-            return super(AmCATResource, self).get_paginate_by(queryset)
+            return super(AmCATResource, self).get_paginate_by(*args, **kwargs)
 
 def _get_field_name(field):
     "Return the field name to report in OPTIONS (for datatables)"

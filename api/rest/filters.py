@@ -42,7 +42,7 @@ import logging; log = logging.getLogger(__name__)
 ORDER_BY_FIELD = "order_by"
 
 class AmCATFilterBackend(filters.DjangoFilterBackend):
-    def get_filter_class(self, view):
+    def get_filter_class(self, view, queryset=None):
         filter_fields = tuple(view.get_filter_fields())
 
         class AutoFilterSet(filterset.FilterSet):

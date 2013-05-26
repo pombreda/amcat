@@ -24,7 +24,7 @@ activated by settings.REST_FRAMEWORK['DEFAULT_PAGINATION_SERIALIZER_CLASS']
 import collections
 
 from rest_framework import pagination, serializers
-from rest_framework.relations import ManyPrimaryKeyRelatedField
+from rest_framework.relations import ManyPrimaryKeyRelatedField, PrimaryKeyRelatedField
 
 from api.rest.fields import DatatablesEchoField
 
@@ -40,13 +40,20 @@ class AmCATPaginationSerializer(pagination.BasePaginationSerializer):
     next = pagination.NextPageField(source='*')
     previous = pagination.PreviousPageField(source='*')
 
+def skip_field(field):
+    # rest framework version compatability
+    if isinstance(field, ManyPrimaryKeyRelatedField):
+        return True
+    if isinstance(field, PrimaryKeyRelatedField) and getattr(field, "many", False):
+        return True
+    
 class AmCATModelSerializer(serializers.ModelSerializer):
     def get_fields(self):
         fields = super(AmCATModelSerializer, self).get_fields()
 
         return collections.OrderedDict(
             [(name, field) for (name, field) in fields.iteritems()
-              if not isinstance(field, ManyPrimaryKeyRelatedField)]
+              if not skip_field(field)]
         )
 
 

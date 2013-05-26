@@ -31,6 +31,14 @@ from django.db.models import Count
 
 STATUS_DONE = (coding.STATUS_COMPLETE, coding.STATUS_IRRELEVANT)
 
+def get_qs(view):
+    # rest framework version compatability
+    ol = view.object_list
+    try:
+        return ol.qs
+    except AttributeError:
+        return ol
+
 class CodingJobSerializer(AmCATModelSerializer):
     """
     This serializer for codingjob includes the amount of total jobs
@@ -43,13 +51,13 @@ class CodingJobSerializer(AmCATModelSerializer):
 
     @cached
     def _get_n_done_jobs(self):
-        return dict(self.context['view'].object_list.qs.distinct().filter(
+        return dict(get_qs(self.context['view']).distinct().filter(
                     codings__status__in=STATUS_DONE).annotate(Count("codings"))
                     .values_list("id", "codings__count"))
 
     @cached
     def _get_n_articles(self):
-        return dict(self.context['view'].object_list.qs.distinct()
+        return dict(get_qs(self.context['view']).distinct()
                 .annotate(n=Count("articleset__articles")).values_list("id", "n"))
 
     def get_n_articles(self, obj):
